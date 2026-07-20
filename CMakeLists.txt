@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.10.0)
 project("tangpa_sdk_client" VERSION 1.0.0.0 DESCRIPTION "Client SDK - Tangpa Robot Client Examples" LANGUAGES CXX)
 
 # 设置 C++ 标准

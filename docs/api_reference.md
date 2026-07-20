@@ -1,8 +1,40 @@
-# 一、客户端接口文档
+# 一、接口定义
 
-## 1. ControlApiClient 业务接口
+## 1.1 连接管理
 
-### 1.1 GetImuData
+`ControlApiClient` 和 `SystemApiClient` 的连接管理接口一致，但相互独立，都需要建立各自的连接才能使用业务接口。
+
+```cpp
+Status Connect(const std::string& server_address, int port);
+Status Connect(const std::string& target);
+Status Connect();
+void Disconnect();
+bool IsConnected() const;
+```
+
+**参数：**
+
+| 函数 | 说明 |
+|------|------|
+| `Connect(address, port)` | 指定地址和端口连接 |
+| `Connect(target)` | 指定完整目标字符串连接（如 `"192.168.0.1:50051"`） |
+| `Connect()` | 读取 `config/config.yaml` 中 `grpc_client.connection.default_target` 自动连接 |
+| `Disconnect()` | 断开连接 |
+
+**返回值：**
+
+| 函数 | 类型 | 说明 |
+|------|------|------|
+| `Connect` | `Status` | 成功返回 OK，失败返回错误状态 |
+| `IsConnected` | `bool` | `true` 已连接，`false` 未连接 |
+
+**备注：** 已连接时重复调用 `Connect` 会返回错误，需先调用 `Disconnect()`。
+
+---
+
+## 1.2 ControlApiClient 业务接口
+
+### 1.2.1 GetImuData
 
 ```cpp
 uint32_t GetImuData(Imu& imu_status);
@@ -33,7 +65,7 @@ uint32_t GetImuData(Imu& imu_status);
 
 ---
 
-### 1.2 MotorCalibration
+### 1.2.2 MotorCalibration
 
 ```cpp
 uint32_t MotorCalibration(const MotorCalibrationRequest& request, MotorCalibrationResponse& response);
@@ -108,7 +140,7 @@ uint32_t MotorCalibration(const MotorCalibrationRequest& request, MotorCalibrati
 
 ---
 
-### 1.3 SendMotorControl
+### 1.2.3 SendMotorControl
 
 ```cpp
 uint32_t SendMotorControl(const Cmotorcommand& command);
@@ -143,7 +175,7 @@ uint32_t SendMotorControl(const Cmotorcommand& command);
 
 ---
 
-### 1.4 SendJoyControl
+### 1.2.4 SendJoyControl
 
 ```cpp
 uint32_t SendJoyControl(const Joy& command);
@@ -161,7 +193,7 @@ uint32_t SendJoyControl(const Joy& command);
 
 ---
 
-### 1.5 SubscribeImu
+### 1.2.5 SubscribeImu
 
 ```cpp
 uint64_t SubscribeImu(const std::function<void(const std::shared_ptr<const Imu>&)>& callback);
@@ -181,7 +213,7 @@ uint64_t SubscribeImu(const std::function<void(const std::shared_ptr<const Imu>&
 
 ---
 
-### 1.6 UnsubscribeImu
+### 1.2.6 UnsubscribeImu
 
 ```cpp
 uint32_t UnsubscribeImu(uint64_t subscription_id);
@@ -201,7 +233,7 @@ uint32_t UnsubscribeImu(uint64_t subscription_id);
 
 ---
 
-### 1.7 SubscribeJoy
+### 1.2.7 SubscribeJoy
 
 ```cpp
 uint64_t SubscribeJoy(const std::function<void(const std::shared_ptr<const Joy>&)>& callback);
@@ -224,7 +256,7 @@ uint64_t SubscribeJoy(const std::function<void(const std::shared_ptr<const Joy>&
 
 ---
 
-### 1.8 UnsubscribeJoy
+### 1.2.8 UnsubscribeJoy
 
 ```cpp
 uint32_t UnsubscribeJoy(uint64_t subscription_id);
@@ -244,7 +276,7 @@ uint32_t UnsubscribeJoy(uint64_t subscription_id);
 
 ---
 
-### 1.9 SubscribeJointState
+### 1.2.9 SubscribeJointState
 
 ```cpp
 uint64_t SubscribeJointState(const std::function<void(const std::shared_ptr<const JointState>&)>& callback);
@@ -264,7 +296,7 @@ uint64_t SubscribeJointState(const std::function<void(const std::shared_ptr<cons
 
 ---
 
-### 1.10 UnsubscribeJointState
+### 1.2.10 UnsubscribeJointState
 
 ```cpp
 uint32_t UnsubscribeJointState(uint64_t subscription_id);
@@ -284,7 +316,7 @@ uint32_t UnsubscribeJointState(uint64_t subscription_id);
 
 ---
 
-### 1.11 SetUWBConfigurator
+### 1.2.11 SetUWBConfigurator
 
 ```cpp
 uint32_t SetUWBConfigurator(const UWBRequestHardware& request);
@@ -326,7 +358,7 @@ uint32_t SetUWBConfigurator(const UWBRequestHardware& request);
 
 ---
 
-### 1.12 SetUWBConfigManager
+### 1.2.12 SetUWBConfigManager
 
 ```cpp
 uint32_t SetUWBConfigManager(const UWBRequestConfig& request);
@@ -364,7 +396,7 @@ uint32_t SetUWBConfigManager(const UWBRequestConfig& request);
 
 ---
 
-### 1.13 SubscribeUWBData
+### 1.2.13 SubscribeUWBData
 
 ```cpp
 uint64_t SubscribeUWBData(const std::function<void(const std::shared_ptr<const LinktrackNodeframe7>&)>& callback);
@@ -409,7 +441,7 @@ uint64_t SubscribeUWBData(const std::function<void(const std::shared_ptr<const L
 
 ---
 
-### 1.14 UnsubscribeUWBData
+### 1.2.14 UnsubscribeUWBData
 
 ```cpp
 uint32_t UnsubscribeUWBData(uint64_t subscription_id);
@@ -429,9 +461,9 @@ uint32_t UnsubscribeUWBData(uint64_t subscription_id);
 
 ---
 
-## 2. SystemApiClient 业务接口
+## 1.3 SystemApiClient 业务接口
 
-### 2.1 GetDiagnosticData
+### 1.3.1 GetDiagnosticData
 
 ```cpp
 uint32_t GetDiagnosticData(DiagnosticMessage& diagnostic_message);
@@ -467,7 +499,7 @@ uint32_t GetDiagnosticData(DiagnosticMessage& diagnostic_message);
 
 ---
 
-### 2.2 GetRobotStatus
+### 1.3.2 GetRobotStatus
 
 ```cpp
 uint32_t GetRobotStatus(RobotStatus& robot_status);
@@ -517,7 +549,7 @@ uint32_t GetRobotStatus(RobotStatus& robot_status);
 
 ---
 
-### 2.3 GetBatteryPercentage
+### 1.3.3 GetBatteryPercentage
 
 ```cpp
 uint32_t GetBatteryPercentage(BatteryPercentage& battery_percentage);
@@ -552,3 +584,60 @@ battery_percentage 示例："0.52"、"0.75"
 | 系统接口层服务端错误，序列化失败 | `ERROR_SERIALIZE_FAILED` | `0x00000003` |
 | 系统接口层服务端异常 | `ERROR_FAILED` | `0x7FFFFFFF` |
 | 成功 | `STATUS_OK` | `0x0` |
+
+
+# 二、接口使用示例
+
+## 2.1 获取诊断数据
+
+```cpp
+auto system_client = std::make_unique<tangpa_system_api::SystemApiClient>();
+system_client->Connect("localhost", 50051);
+
+tangpa_system_api::DiagnosticMessage msg;
+uint32_t result = system_client->GetDiagnosticData(msg);
+if (result == 0) {
+    std::cout << "Diagnostic: " << msg.DebugString() << std::endl;
+}
+system_client->Disconnect();
+```
+
+## 2.2 发送电机控制命令
+
+```cpp
+auto client = std::make_unique<tangpa_control_api::ControlApiClient>();
+client->Connect("localhost", 50051);
+
+tangpa_control_api::Cmotorcommand cmd;
+cmd.add_motor_ids(1);
+cmd.add_control_modes(0);
+cmd.add_positions(1.57f);
+cmd.add_speeds(0.5f);
+cmd.add_torques(10.0f);
+cmd.add_kps(100.0f);
+cmd.add_kds(5.0f);
+
+uint32_t result = client->SendMotorControl(cmd);
+client->Disconnect();
+```
+
+## 2.3 订阅关节状态
+
+```cpp
+auto client = std::make_unique<tangpa_control_api::ControlApiClient>();
+client->Connect("localhost", 50051);
+
+uint64_t sub_id = client->SubscribeJointState(
+    [](const std::shared_ptr<const tangpa_control_api::JointState>& state) {
+        for (int i = 0; i < state->name_size(); ++i) {
+            std::cout << state->name(i) << ": " << state->position(i) << std::endl;
+        }
+    });
+
+std::this_thread::sleep_for(std::chrono::seconds(10));
+client->UnsubscribeJointState(sub_id);
+client->Disconnect();
+```
+
+---
+
