@@ -1,8 +1,0 @@
-syntax = "proto3";
-package humanoid_robot.PB.ros2.unique_identifier_msgs;
-
-// 对应unique_identifier_msgs/UUID.msg
-message UUID {
-   // bytes uuid = 1;  // ROS uint8[16] → proto3 bytes（高效存储16字节）
-   repeated uint32 uuid = 1;
-}

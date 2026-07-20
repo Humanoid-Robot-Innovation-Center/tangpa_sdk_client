@@ -1,4 +1,0 @@
-syntax = "proto3";
-package humanoid_robot.PB.ros2.std_msgs;
-
-message Empty {}
