@@ -54,26 +54,31 @@ add_executable(my_app main.cpp)
 target_link_libraries(my_app PRIVATE tangpa_sdk_client::chric_tangpa_sdk_module_api)
 ```
 
-### 2.2 示例代码
+**main.cpp：**
 
 编辑示例代码 main.cpp
 
 ```cpp
+// 引入 SDK 客户端头文件
 #include "chric/robot/tangpa/tangpa_control_api.h"
-#include "chric/robot/tangpa/tangpa_system_api.h"
+
+#include <chrono>
+#include <iostream>
+#include <memory>
+#include <thread>
 
 using namespace humanoid_robot::sdk_client::robot;
 
 int main() {
+    // 创建控制客户端
     auto control_client = std::make_unique<tangpa_control_api::ControlApiClient>();
-    auto system_client = std::make_unique<tangpa_system_api::SystemApiClient>();
 
-    Status status = control_client->Connect("localhost", 50051);
-    if (!status) {
-        std::cerr << "Failed to connect: " << status.message() << std::endl;
+    // 连接控制客户端
+    auto control_conn_status = control_client->Connect("192.168.127.10", 50051);
+    if (!control_conn_status) {
+        std::cerr << "Failed to connect: " << control_conn_status.DebugString() << std::endl;
         return 1;
     }
-    system_client->Connect("localhost", 50051);
 
     // 订阅 IMU 数据
     uint64_t sub_id = control_client->SubscribeImu(
@@ -90,7 +95,7 @@ int main() {
 }
 ```
 
-### 2.3 构建示例
+### 2.2 构建示例
 
 ```bash
 cd my_project
@@ -107,7 +112,7 @@ make -j$(nproc)
 set(CMAKE_SKIP_BUILD_RPATH ON)
 ```
 
-### 2.4 运行示例
+### 2.3 运行示例
 
 准备配置文件
 
@@ -263,11 +268,12 @@ cd ./bin/control_test_gui/ && ./control_test_gui
 
 ### 连接失败
 
-1. 检查机器人服务器是否运行
+1. 检查机器人API服务端是否运行
 2. 检查地址和端口是否正确
 3. 检查防火墙设置
 
 ### 订阅无回调
 
-1. 检查服务端是否已启用对应数据流
+1. 检查机器人API服务端是否已启用对应数据流
 2. 检查网络连接是否正常
+
