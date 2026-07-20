@@ -1,0 +1,10 @@
+syntax = "proto3";
+package humanoid_robot.PB.ros2.sensor_msgs;
+
+import "ros2/std_msgs/Header.proto";
+
+message Joy {
+    ros2.std_msgs.Header header = 1;                   // 消息头
+    repeated float axes = 2;
+    repeated int32 buttons = 3;
+}

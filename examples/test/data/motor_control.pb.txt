@@ -1,0 +1,7 @@
+motor_ids: 1
+control_modes: 0
+positions: 100.0
+speeds: 50.0
+torques: 10.0
+kps: 10.0
+kds: 1.0

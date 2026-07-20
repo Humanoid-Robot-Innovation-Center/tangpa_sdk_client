@@ -1,0 +1,15 @@
+syntax = "proto3";
+package humanoid_robot.PB.ros2.nav_msgs;
+
+// 依赖标准消息类型
+import "ros2/geometry_msgs/Pose.proto";
+import "ros2/builtin_interfaces/Time.proto";
+
+// 对应nav_msgs/MapMetaData.msg
+message MapMetaData {
+  ros2.builtin_interfaces.Time map_load_time = 1;
+  float resolution = 2;             // 地图分辨率（米/像素）ROS float32 → proto3 float
+  uint32 width = 3;                 // 地图宽度（像素）
+  uint32 height = 4;                // 地图高度（像素）
+  ros2.geometry_msgs.Pose origin = 5; // 地图原点姿态
+}

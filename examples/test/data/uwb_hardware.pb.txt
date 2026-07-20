@@ -1,0 +1,3 @@
+target_device: "/dev/uwb_tag"
+target_role: 1
+baud: 921600

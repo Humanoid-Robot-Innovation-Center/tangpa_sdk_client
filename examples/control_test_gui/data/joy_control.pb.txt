@@ -1,0 +1,8 @@
+header {
+  frame_id: "base_link"
+}
+axes: 0.5
+axes: 0.0
+axes: 0.0
+buttons: 1
+buttons: 0

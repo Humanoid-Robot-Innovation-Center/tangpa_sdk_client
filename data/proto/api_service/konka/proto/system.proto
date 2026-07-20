@@ -1,0 +1,5 @@
+syntax = "proto3";
+package humanoid_robot.PB.api_service.konka.system;
+// import "ros2/std_msgs/Header.proto";
+// import "konka_ros2_interfaces/common/ccu2_service.proto";
+

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package humanoid_robot.PB.api_service.tangpa.system;
+
+message BatteryPercentage {
+    string info = 1; 
+}
+
+
+
+import "ros2/diagnostic_msgs/DiagnosticArray.proto";
+
+
+message DiagnosticMessage {
+    ros2.diagnostic_msgs.DiagnosticArray messages = 1;                   // 诊断结果数组
+    int32 result = 2; // 执行结果
+}
+
+
+
+// 机器人状态信息
+message RobotStatus {
+  int64 state_id = 1;          // 状态码
+  string state_desc = 2;       // 状态描述
+  float battery = 3;           // 当前电量
+  repeated string error_codes = 4; // 错误码列表（string 数组）
+}// This file was generated. DO NOT EDIT!
+
+
+
+
+enum TangPaStatus {
+  SUCCESS = 0;
+  FAILED = -1;
+}

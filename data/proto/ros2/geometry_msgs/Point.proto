@@ -1,0 +1,9 @@
+syntax = "proto3";
+package humanoid_robot.PB.ros2.geometry_msgs;
+
+// 对应geometry_msgs/Point.msg
+message Point {
+  double x = 1;  // ROS float64 → proto3 double
+  double y = 2;
+  double z = 3;
+}

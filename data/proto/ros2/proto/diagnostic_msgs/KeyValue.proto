@@ -1,0 +1,7 @@
+syntax = "proto3";
+package humanoid_robot.PB.ros2.diagnostic_msgs;
+
+message KeyValue{
+  string key = 1;
+  string value = 2;
+}

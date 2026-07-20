@@ -1,0 +1,7 @@
+syntax = "proto3";
+package humanoid_robot.PB.ros2.action_msgs;
+
+import "ros2/action_msgs/GoalStatus.proto";
+message GoalStatusArray {
+  repeated GoalStatus status_list = 1;
+}

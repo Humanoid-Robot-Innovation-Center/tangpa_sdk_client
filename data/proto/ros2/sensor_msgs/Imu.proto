@@ -1,0 +1,16 @@
+syntax = "proto3";
+package humanoid_robot.PB.ros2.sensor_msgs;
+
+import "ros2/std_msgs/Header.proto";
+import "ros2/geometry_msgs/Quaternion.proto";
+import "ros2/geometry_msgs/Vector3.proto";
+
+message Imu {
+    ros2.std_msgs.Header header = 1;                   // 消息头
+    ros2.geometry_msgs.Quaternion orientation = 2;
+    repeated double orientation_covariance = 3;          
+    ros2.geometry_msgs.Vector3 angular_velocity = 4;
+    repeated double angular_velocity_covariance = 5;
+    ros2.geometry_msgs.Vector3 linear_acceleration = 6;
+    repeated double linear_acceleration_covariance = 7;
+}

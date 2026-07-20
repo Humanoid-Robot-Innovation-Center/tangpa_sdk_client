@@ -1,0 +1,12 @@
+syntax = "proto3";
+package humanoid_robot.PB.ros2.nav_msgs;
+
+// 依赖PoseStamped，需import
+import "ros2/geometry_msgs/PoseStamped.proto";
+import "ros2/std_msgs/Header.proto";
+
+// 自定义的nav_msgs/Goals（导航目标位姿数组）
+message Goals {
+  ros2.std_msgs.Header header = 1;
+  repeated humanoid_robot.PB.ros2.geometry_msgs.PoseStamped goals = 2;  // 多个目标位姿
+}

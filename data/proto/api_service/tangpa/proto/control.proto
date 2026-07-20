@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package humanoid_robot.PB.api_service.tangpa.control;
+
+// import "ros2/std_msgs/Header.proto";
+// import "ros2/geometry_msgs/Vector3.proto";
+// import "ros2/geometry_msgs/Quaternion.proto";
+import "ros2/diagnostic_msgs/DiagnosticArray.proto";
+import "ros2/geometry_msgs/Twist.proto";
+
+
+// // UWB 单个节点信息
+// message CLinktrackNode7 {
+//     uint32 role = 1;          // 节点角色
+//     uint32 id = 2;           // 节点 ID
+//     float dis = 3;           // 距离 distance
+//     float angle0 = 4;        // 方位角/俯仰角
+//     float angle1 = 5;        // 方位角/俯仰角
+//     float fp_rssi = 6;       // First Path RSSI（首径信号强度）
+//     float rx_rssi = 7;       // Receive RSSI（接收总信号强度）
+// }
+
+// message CLinktrackNodeframe7 {
+//     uint32 role = 1;                // 本帧发送者/本设备角色
+//     uint32 id = 2;                 // 本帧发送者的ID
+//     uint32 local_time = 3;         // 设备本地时间戳
+//     uint32 system_time = 4;        // 系统时间戳
+//     float voltage = 5;             // 设备电压
+//     repeated CLinktrackNode7 nodes = 6; // 多个节点测量结果
+// }
+
+// // IMU状态
+// message IMUStatus {
+//     ros2.std_msgs.Header header = 1;                   // 消息头
+//     ros2.geometry_msgs.Quaternion orientation = 2;
+//     repeated double orientation_covariance = 3;          
+//     ros2.geometry_msgs.Vector3 angular_velocity = 4;
+//     repeated double angular_velocity_covariance = 5;
+//     ros2.geometry_msgs.Vector3 linear_acceleration = 6;
+//     repeated double linear_acceleration_covariance = 7;
+// }
+
+
+
+// message JoyControllerRequest {
+//     ros2.std_msgs.Header header = 1;                   // 消息头
+//     repeated float axes = 2;
+//     repeated int32 buttons = 3;
+// }
+
+
+message JoyControllerResponse {
+    ros2.diagnostic_msgs.DiagnosticArray results = 3;
+}
+
+
+
+// // 电机控制请求
+// message MotorControlRequest {
+//     repeated uint32 motor_ids = 1;                  // 电机ID数组
+//     repeated uint32 control_modes = 2;              // 控制模式数组 0:位置 1:速度 2:力矩 3:力位混合
+//     repeated float positions = 3;         // 位置值数组
+//     repeated float speeds = 4;            // 速度值数组
+//     repeated float torques = 5;           // 力矩数组
+//     repeated float kps = 6;               // kp值数组
+//     repeated float kds = 7;               // kd值数组
+// }
+
+
+
+
+
+// // 电机控制请求
+// message MotorControlResponse {
+//     ros2.std_msgs.Header header = 1;                   // 消息头
+//     repeated string name = 2;             // 关节名称列表
+//     repeated double position = 3;          // 关节位置 rad/m
+//     repeated double velocity = 4;          // 关节速度 rad/s/m/s
+//     repeated double effort = 5;            // 关节力矩/力 Nm/N
+// }
+
+
+
+message UWBRequestConfig {
+    int32 target_role = 1;
+    double target_distance = 2;
+}
+
+
+
+message UWBRequestHardware {
+    string target_device = 1;
+    int32 target_role = 2;
+    int32 baud = 3;
+}
+
+
+
+message UWBRequest {
+    string target_device = 1;
+    int32 target_role = 2;
+    int32 baud = 3;
+}
+
+
+message MotorCalibrationRequest {
+    uint32 motor_id = 1;
+}
+
+message MotorCalibrationResponse {
+    string state = 1; // 标定状态 idle/running/succeeded/failed/rejected
+    uint32 motor_id = 2; // 电机ID
+    string message = 3; // 进度、失败或拒绝原因
+}

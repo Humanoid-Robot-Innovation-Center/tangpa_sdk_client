@@ -1,0 +1,3 @@
+syntax = "proto3";
+
+package humanoid_robot.PB.api_service.tangpa.navigation;

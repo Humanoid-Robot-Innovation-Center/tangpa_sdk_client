@@ -1,0 +1,12 @@
+syntax = "proto3";
+package humanoid_robot.PB.ros2.geometry_msgs;
+
+// 依赖Header和Pose，需import
+import "ros2/std_msgs/Header.proto";
+import "ros2/geometry_msgs/Pose.proto";
+
+// 对应geometry_msgs/PoseStamped.msg
+message PoseStamped {
+  ros2.std_msgs.Header header = 1;
+  ros2.geometry_msgs.Pose pose = 2;
+}

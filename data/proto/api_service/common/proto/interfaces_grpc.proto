@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package humanoid_robot.PB.api_service.common;
+
+// Import the request/response message definitions
+import "api_service/common/interfaces_request_response.proto";
+
+// =============================================================================
+// Main Interface Service - All Operations
+// =============================================================================
+
+service InterfaceService {
+    // 单次请求，单次响应（控制命令、查询）
+    rpc Send(SendRequest) returns (SendResponse);
+
+    // 单次请求，持续响应（视觉/感知持续大数据流）
+    rpc SendStream(SendRequest) returns (stream SendResponse);
+
+    // 多次请求，单次响应（批量上传、分片提交）
+    rpc SendBatch(stream SendRequest) returns (SendResponse);
+
+    // 多次请求，多次响应（交互式控制会话）
+    rpc SendDuplex(stream SendRequest) returns (stream SendResponse);
+
+    // 事件订阅（稀疏事件：导航到达、异常告警等）
+    rpc Subscribe(SubscribeRequest) returns (SubscribeResponse);
+    rpc Unsubscribe(UnsubscribeRequest) returns (UnsubscribeResponse);
+}
+
+

@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------------------
+# gRPC客户端配置
+# ---------------------------------------------------------------------------
+grpc_client:
+  # 服务器连接配置
+  connection:
+    # 默认连接目标（IP:Port）
+    default_target: "192.168.1.100:50051"
+    # 通道就绪等待超时 (ms)
+    channel_ready_timeout_ms: 5000
+    # 通道状态检查间隔 (s)
+    channel_check_interval_s: 1
+  # gRPC通道参数
+  channel:
+    # 最大接收消息大小 (MB)
+    max_receive_mb: 100
+    # 最大发送消息大小 (MB)
+    max_send_mb: 100
+
+# ---------------------------------------------------------------------------
+# 日志配置
+# ---------------------------------------------------------------------------
+logging:
+  # 日志级别
+  # 0=FATAL, 1=ERROR, 2=WARN, 3=INFO, 4=DEBUG
+  log_level: 3
+  # 日志目录(绝对路径或相对可执行程序路径)
+  log_dir: "SDK-Client/logs"
+  # 日志文件最大限制 (MB)
+  max_file_size_mb: 3
+  # 最大文件数量
+  max_files_per_level: 10
+  # 异步开关
+  # true=异步, false=同步
+  enable_async: true
+  # 控制台输出开关
+  # true=控制台输出, false=不控制台输出
+  enable_console_output: true
+  # 简单输出开关
+  # true=简单输出（仅输出日志级别和消息）, false=详细输出（包含日志输出文件路径、行号、函数名等）
+  enable_simple_output: true

@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package humanoid_robot.PB.api_service.konka.control;
+
+enum ResponseStatus {
+  RESPONSE_SUCCESS = 0x00000000;
+  ERROR_UNKNOWN_SERVICE = 0x04100000;
+  ERROR_PARSE_FAILED = 0x04101000;
+  ERROR_DATA_GET_FAILED = 0x04101001;
+}
+
+message RequestEmergencyStop {
+  // 急停类型（1 = 软件急停，2 = 硬件急停（切断动力），默认 1）
+  int32 stop_type = 1; 
+  
+  // 急停原因（可选，用于日志记录）
+  string reason = 2; // 字符串类型无需默认值，默认空字符串
+}
+
+message ResponseEmergencyStop {
+   double stop_timestamp = 1; // 急停触发时间戳（秒）
+   string stop_feedback = 2;// 急停执行反馈信息（可选）
+}
+
+message RequestGetJointInfo {
+  bool with_support_mode = 1; // 是否返回每个关节支持的运动模式，默认 true
+}
+
+message JointDetail {
+  string joint_name = 1; // 单个关节名称（如 "left_hip_yaw"、"right_elbow"）
+  repeated int32 support_modes = 2; // 该关节单独支持的运动模式（1=绝对位置，2=相对位置，3=速度，4=力矩）
+  double min_limit = 3; // 该关节的最小限位（单位：rad/m/s，根据模式而定）
+  double max_limit = 4; // 该关节的最大限位
+}
+
+// 关节信息返回结果
+message ResponseGetJointInfo {
+  repeated JointDetail joint_details = 1; 
+}
+
+// 三维坐标点定义
+message Point {
+    double x = 1; // x轴坐标，单位：米
+    double y = 2; // y轴坐标，单位：米
+    double z = 3; // z轴坐标，单位：米
+}
+
+// 抓取动作请求消息
+message RequestGrabAction {
+    // 目标坐标所属参考坐标系
+    string frame_id = 1;
+    // 抓取目标三维坐标(必填字段)
+    Point target_pos = 2;
+    // 动作执行速度（0.1~1.0倍速）
+    double speed = 3;
+}
+
+message ResponseGrabAction {
+    // 抓取动作是否执行成功
+    bool success = 1;
+    // 抓取执行反馈信息（失败时填写原因，成功可填"抓取完成"）
+    string grab_feedback = 2;
+}
+
+// 关节运动模式枚举（标准化魔法数字，提升可读性和可维护性）
+enum JointMotionMode {
+  JOINT_MODE_UNSPECIFIED = 0;          // 默认值（proto3 枚举必须以 0 开头）
+  JOINT_MODE_ABSOLUTE_POSITION = 1;    // 绝对位置模式（单位：rad）
+  JOINT_MODE_RELATIVE_POSITION = 2;    // 相对位置模式（单位：rad）
+  JOINT_MODE_VELOCITY = 3;             // 速度模式（单位：rad/s）
+  JOINT_MODE_TORQUE = 4;               // 力矩模式（单位：N·m）
+}
+
+// 单个关节的控制指令（嵌套 Message）
+message JointCommand {
+  // 关节名称（必填，如 "head_camera_yaw_joint"）
+  string joint_name = 1;
+  
+  // 运动模式（必填，参考 JointMotionMode 枚举）
+  JointMotionMode motion_mode = 2;
+  
+  // 目标值（必填，单位随运动模式变化：位置=rad；速度=rad/s；力矩=N·m）
+  double target_value = 3;
+  
+  // 最大速度（可选，单位：rad/s，默认使用关节默认值）
+  double max_velocity = 4; // 0.0 表示使用默认值
+}
+
+// 多关节运动控制请求消息
+message RequestJointMotion {
+  // 多关节控制指令列表
+  repeated JointCommand joint_commands = 1;
+}
+
+message ResponseJointMotion {
+  // 关节运动执行情况（示例："所有关节执行成功"、"left_hip_yaw: 目标值超出限位"）
+  string execute_info = 1;
+}
+
+message RequestNodAction {
+    // 动作执行速度
+    double speed = 1;
+    // 点头次数
+    int32 nod_times = 2;
+}
+
+message ResponseNodAction {
+    // 动作是否执行成功
+    bool success = 1;
+}

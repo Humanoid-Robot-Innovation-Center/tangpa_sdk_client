@@ -1,0 +1,13 @@
+syntax = "proto3";
+package humanoid_robot.PB.tangpa_ros2_interfaces.control.cmotor_interface;
+
+// 电机控制请求
+message Cmotorcommand {
+    repeated uint32 motor_ids = 1;                  // 电机ID数组
+    repeated uint32 control_modes = 2;              // 控制模式数组 0:位置 1:速度 2:力矩 3:力位混合
+    repeated float positions = 3;         // 位置值数组
+    repeated float speeds = 4;            // 速度值数组
+    repeated float torques = 5;           // 力矩数组
+    repeated float kps = 6;               // kp值数组
+    repeated float kds = 7;               // kd值数组
+}

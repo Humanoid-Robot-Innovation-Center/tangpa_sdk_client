@@ -1,0 +1,260 @@
+syntax = "proto3";
+
+package humanoid_robot.PB.api_service.konka.perception;
+import "common/variant.proto";
+
+// 大脑配置请求
+message RequestBrainConfig {
+  string brain_api_key = 1;          // 必选 阿里云通义千问 DASHSCOPE_API_KEY 密钥
+  string brain_multimodal_model = 2; // 必选 多模态大模型名称，默认：qwen3-vl-30b-a3b-instruct
+  bool brain_enable_memory_reset = 3; // 必选 是否清理历史记忆，默认：true
+  bool brain_enable_scene_visualization = 4; // 必选 是否开启场景增量可视化，默认：false
+  string brain_scene_visualization_host = 5; // 可选 场景可视化服务地址，默认：""
+  string brain_embedding_service_url = 6; // 必选 Embedding 模型调度器服务地址，默认：" "
+  int32 brain_embedding_service_workers = 7; // 必选 Embedding 服务实例数量，默认：1
+}
+
+// 大脑配置响应
+message ResponseBrainConfig {
+  string status = 1; // 返回状态：success / failure
+}
+
+
+// 大脑开关请求
+message RequestBrainSwitch {
+  bool brain_enable = 1; // 必选 true=启动大脑功能 false=关闭大脑功能
+}
+
+// 大脑开关响应
+message ResponseBrainSwitch {
+  string status = 1; // 返回状态：success / failure
+}
+
+// 感知配置请求
+message RequestPerceptionConfig {
+    bool percept_enable = 1;             // 感知开启/关闭
+    bool percept_enable_visual = 2;      // 感知可视化开启/关闭
+    bool percept_enable_img_save = 3;    // 感知原图存储开启/关闭
+    bool percept_enable_visual_save = 4; // 感知结果可视化图存储开启/关闭
+    bool percept_enable_result_save = 5; // 感知结果存储开启/关闭
+    string percept_enable_img_save_path = 6;    // 感知原图存储路径
+    string percept_enable_visual_save_path = 7; // 感知结果可视化图路径
+    string percept_enable_result_save_path = 8; // 感知结果存储路径
+}
+
+// 感知配置响应
+message ResponsePerceptionConfig {
+    string status = 1; // 状态：success-成功 / failure-失败
+}
+
+
+message TrackRow {
+    float x1 = 1;
+    float y1 = 2;
+    float x2 = 3;
+    float y2 = 4;
+    string trackId = 5;
+    float conf = 6;
+    string cls = 7;
+    repeated Masks mask = 8;
+    bool isMove = 9;
+    repeated float feats = 10;
+}
+
+message Masks {
+    int32 x = 1;
+    int32 y = 2;
+}
+
+// 感知配置请求
+message RequestPerceptionResult {
+
+}
+
+// 感知配置响应
+message ResponsePerceptionResult {
+    repeated TrackRow tracks = 1;
+}
+
+
+message PerceptionStatus {
+  string code = 1;        // 错误代码
+  string message = 2;     // 错误消息
+  string details = 3;     // 详细信息
+  int64 timestamp = 4;    // 错误发生时间戳
+}
+
+
+// 定义请求类型枚举
+enum PerceptionRpcType {
+  RPC_TYPE_UNKNOWN = 0;
+  RPC_TYPE_PERCEPTION = 1;  // 对应GetPerceptionResult
+  RPC_TYPE_DETECTION = 2;   // 对应GetDetectionResult
+  RPC_TYPE_DIVISION = 3;    // 对应GetDivisionResult
+  RPC_TYPE_VOICE_TTS = 4;
+  RPC_TYPE_VOICE_TTS_CONFIG = 5;
+  RPC_TYPE_VOICE_ASR_STREAM = 6;
+  RPC_TYPE_VOICE_ASR_CONFIG = 7;
+  RPC_TYPE_BRAIN_CONFIG = 8;
+  RPC_TYPE_BRAIN_SWITCH = 9;
+  RPC_TYPE_PERCEPTION_CONFIG = 10;
+  RPC_TYPE_PERCEPTION_RESULT = 11;
+}
+
+// 统一请求体
+message UnifiedRequest {
+  PerceptionRpcType rpc_type = 1;
+  humanoid_robot.PB.common.Dictionary input = 2; 
+}
+
+// 统一响应体
+message UnifiedResponse {
+  PerceptionRpcType rpc_type = 1;
+  humanoid_robot.PB.common.Dictionary output = 2;
+  PerceptionStatus status = 3; // 响应状态
+}
+
+
+service PerceptionService {
+  rpc Call(UnifiedRequest) returns (UnifiedResponse);
+  rpc CallStream(UnifiedRequest) returns (stream UnifiedResponse);
+}
+
+
+// ================================= Detection 检测请求===========================================
+message RequestDetection {
+    humanoid_robot.PB.common.Image image = 1; // 输入图像
+}
+
+
+
+// ==================================== Division 分割请求=========================================
+message RequestDivision {
+    humanoid_robot.PB.common.Image image = 1; // 输入图像
+}
+
+
+
+// ================================= Perception 感知整体请求============================================
+message RequestPerception {
+    humanoid_robot.PB.common.Image image = 1; // 输入图像
+    bool requiresMasks = 2; // 是否需要掩码
+}
+
+
+// ================================= Detection 检测结果（响应体）===========================================
+message Detection {
+    bytes timeStamp = 1; // 时间戳
+    repeated humanoid_robot.PB.common.DetectionRow rows = 2; // 检测结果行
+}
+
+message ResponseDetection {
+    Detection detection = 1; // 检测结果
+    int32 ret = 2; // 返回码
+}
+
+
+// ==================================== Division 分割结果（响应体）=========================================
+message Division {
+    bytes timeStamp = 1; // 时间戳
+    repeated humanoid_robot.PB.common.DivisionRow rows = 2; // 分割结果行
+}   
+
+message ResponseDivision {
+    Division division = 1; // 分割结果
+    int32 ret = 2; // 返回码
+}
+
+
+// ================================= Perception 感知整体结果（响应体）============================================
+message Perception{
+    bytes timeStamp = 1; // 时间戳
+    repeated humanoid_robot.PB.common.PerceptionRow rows = 2; // 感知结果行
+}
+
+message TempPerception {
+    Perception perception = 1; // 感知结果
+    int32 ret = 2; // 返回码
+}
+
+message ResponsePerception {
+   repeated Perception singel_perception = 1;
+}
+// This file was generated. DO NOT EDIT!
+
+
+
+
+enum ResponseStatus {
+  RESPONSE_SUCCESS = 0x00000000;
+  ERROR_UNKNOWN_SERVICE = 0x02100000;
+  ERROR_PARSE_FAILED = 0x02101000;
+  ERROR_DATA_GET_FAILED = 0x02101001;
+}
+
+
+
+// 语言识别请求
+message RequestVoiceASRConfig {
+  // 阿里通义千问apikey（必填）
+  string voice_asr_apikey = 1;
+  // 是否开启该模块（非必填，默认true）
+  string voice_asr_enable = 2;
+}
+
+// 语音识别配置响应
+message ResponseVoiceASRConfig {
+  // 识别状态：success/failure
+  string status = 1;
+}
+
+
+
+// 语音识别（流式）调用请求
+message RequestVoiceASRStream {
+  // 音频文件绝对路径（必填）
+  string voice_path = 1;
+}
+
+// 语音识别（流式）调用响应
+message ResponseVoiceASRStream{
+  // 识别状态：success/failure
+  string status = 1;
+  // 识别出的文本（成功时返回，失败时为错误描述）
+  string content = 2;
+}
+
+message RepeatVoiceStream{
+  repeated ResponseVoiceASRStream single_stream = 1;
+}
+
+
+
+
+// 语音合成配置请求
+message RequestVoiceTTSConfig {
+  // 阿里通义千问apikey（必填）
+  string voice_tts_apikey = 1;
+  // 是否开启该模块（非必填，默认false）
+  string voice_tts_enable = 2;
+}
+
+// 语音合成配置响应
+message ResponseVoiceTTSConfig {
+  // 配置状态：success/failure
+  string status = 1;
+}
+
+
+
+// 语音合成调用请求
+message RequestVoiceTTS {
+  // 要播放的内容
+  string context = 1;
+}
+
+// 语音合成调用响应
+message ResponseVoiceTTS {
+  // 播放状态：success/failure
+  string status = 1;
+}

@@ -1,0 +1,32 @@
+syntax = "proto3";
+package humanoid_robot.PB.api_service.common;
+
+enum CommonStatus {
+  // 通用错误码 第一部分
+  // 由于错误码定义是uint32，所以错误码的范围是0-0x7FFFFFFF
+  // 除了FAILED，其他错误码的不允许使用第32位，因为这是符号位
+  SUCCESS = 0x0;                          // 成功
+  FAILED = 0x7FFFFFFF;                            // 失败
+
+  // 通用错误码 第二部分
+  ERROR_TIMEOUT = 0x00000001; // 超时错误
+  ERROR_PARSE_FAILED = 0x00000002; // 参数解析失败错误
+  ERROR_SERIALIZE_FAILED = 0x00000003; // 序列化失败错误
+  ERROR_DESERIALIZE_FAILED = 0x00000004; // 反序列化失败错误
+
+  // sdk client错误码
+  ERROR_CONNECT_FAILED = 0x00100001; // 连接错误
+  ERROR_NOT_CONNECTED = 0x00100002; // 未连接错误
+  ERROR_SEND_FAILED = 0x00100003; // 发送失败错误
+  ERROR_RECIVE_FAILED = 0x00100004; // 接收失败错误
+
+  // sdk server错误码
+  ERROR_UNKNOWN_SERVICE = 0x00200001; // 未知服务错误
+  ERROR_CONVERT_FAILED = 0x00200002; // 数据类型转换失败错误
+  ERROR_MODULE_NOT_FOUND = 0x00200003; // 模块未找到错误
+  ERROR_MODULE_STOPPED = 0x00200004; // 模块已停止错误
+  ERROR_MODULE_NOT_RUNNING = 0x00200005; // 模块未运行错误
+  ERROR_INVALID_PARAMETER = 0x00200006; // 参数无效错误
+  ERROR_SUBSYSTEM_NOT_READY = 0x00200007; // 子系统服务未就绪错误
+
+}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package humanoid_robot.PB.tangpa_ros2_interfaces.control.nlink_parser;
+
+import "tangpa_ros2_interfaces/control/nlink_parser/LinktrackNode7.proto";
+
+message LinktrackNodeframe7 {
+    uint32 role = 1;                // 本帧发送者/本设备角色
+    uint32 id = 2;                 // 本帧发送者的ID
+    uint32 local_time = 3;         // 设备本地时间戳
+    uint32 system_time = 4;        // 系统时间戳
+    float voltage = 5;             // 设备电压
+    repeated LinktrackNode7 nodes = 6; // 多个节点测量结果
+}
