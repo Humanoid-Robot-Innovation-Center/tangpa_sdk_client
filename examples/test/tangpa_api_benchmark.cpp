@@ -180,8 +180,6 @@ void printMenu() {
   cout << "    [8] GetDiag    - 获取诊断数据" << endl;
   cout << "    [9] GetRobot   - 获取机器人状态" << endl;
   cout << "   [10] GetBattery - 获取电池电量" << endl;
-  // cout << "   [11] JoyCtrl    - 手柄控制指令(RPC)" << endl;
-  // cout << "   [12] MotorCtrl  - 电机控制(RPC)" << endl;
   cout << endl;
   cout << "------------------------ 发布接口 ------------------------" << endl;
   cout << "   [13] JoySend    - 手柄控制指令(Zenoh)" << endl;
@@ -278,7 +276,7 @@ void TestMotorControl(ControlApiClient& client) {
   const float CONTROL_FREQ = 500.0f;  // 帧率 Hz
 
   Cmotorcommand motor_template;
-  if (!ReadProtoFromTextFile(std::string(kDataDir) + "motor_control_stream.pb.txt",
+  if (!ReadProtoFromTextFile(std::string(kDataDir) + "motor_control.pb.txt",
                               motor_template)) {
     return;
   }
@@ -787,165 +785,6 @@ void TestGetBatteryPercentage(SystemApiClient& client) {
   cout << battery.DebugString() << endl;
 }
 
-// void TestJoyControl(ControlApiClient& client) {
-/*
-void TestJoyControl(ControlApiClient& client) {
-  const int TEST_COUNT = 50;
-  std::vector<double> latencies;
-  uint32_t success_count = 0;
-
-  cout << "\n✅ 开始手柄控制测试..." << endl;
-  cout << "    测试次数: " << TEST_COUNT << endl;
-
-  Joy joy_template;
-  if (!ReadProtoFromTextFile(std::string(kDataDir) + "joy_control.pb.txt",
-                              joy_template)) {
-    return;
-  }
-
-  for (int i = 1; i <= TEST_COUNT; ++i) {
-    Joy joy_req;
-    joy_req.CopyFrom(joy_template);
-
-    auto* header = joy_req.mutable_header();
-    header->mutable_stamp()->set_sec(static_cast<uint32_t>(time(nullptr)));
-    header->mutable_stamp()->set_nanosec(0);
-
-    JoyControllerResponse joy_resp;
-
-    auto start = chrono::steady_clock::now();
-    uint32_t status = client.JoyControl(joy_req, joy_resp);
-    auto end = chrono::steady_clock::now();
-
-    double latency_ms =
-        chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() /
-        1000000.0;
-    latencies.push_back(latency_ms);
-
-    if (status == 0) {
-      success_count++;
-    }
-
-    cout << "\r⏳ 进度: " << i << "/" << TEST_COUNT << flush;
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-  }
-  cout << endl;
-
-  if (latencies.empty()) {
-    cout << "[!] JoyControl 无数据" << endl;
-    return;
-  }
-
-  sort(latencies.begin(), latencies.end());
-  double min_val = latencies.front();
-  double max_val = latencies.back();
-  double sum = 0.0;
-  for (double v : latencies) sum += v;
-  double avg = sum / latencies.size();
-
-  int p50_idx = static_cast<int>(0.50 * latencies.size());
-  int p95_idx = static_cast<int>(0.95 * latencies.size());
-  int p99_idx = static_cast<int>(0.99 * latencies.size());
-
-  double p50 = latencies[p50_idx];
-  double p95 = latencies[p95_idx];
-  double p99 = latencies[p99_idx];
-
-  cout << fixed << setprecision(3);
-  cout << "\n╔======================================╗" << endl;
-  cout << "║      JoyControl 统计结果             ║" << endl;
-  cout << "╠======================================╣" << endl;
-  cout << "║ 总请求数: " << setw(13) << TEST_COUNT << " ║" << endl;
-  cout << "║ 成功数: " << setw(15) << success_count << " ║" << endl;
-  cout << "║ 成功率: " << setw(14) << (success_count * 100.0 / TEST_COUNT)
-       << "% ║" << endl;
-  cout << "║ 最小延迟: " << setw(12) << min_val << " ms ║" << endl;
-  cout << "║ 最大延迟: " << setw(12) << max_val << " ms ║" << endl;
-  cout << "║ 平均延迟: " << setw(12) << avg << " ms ║" << endl;
-  cout << "║ P50 延迟: " << setw(13) << p50 << " ms ║" << endl;
-  cout << "║ P95 延迟: " << setw(13) << p95 << " ms ║" << endl;
-  cout << "║ P99 延迟: " << setw(13) << p99 << " ms ║" << endl;
-  cout << "╚======================================╝" << endl;
-}
-*/
-
-/*
-void TestCmotorcommand(ControlApiClient& client) {
-  const int TEST_COUNT = 50;
-  std::vector<double> latencies;
-  uint32_t success_count = 0;
-
-  cout << "\n✅ 开始单电机控制测试..." << endl;
-  cout << "    测试次数: " << TEST_COUNT << endl;
-
-  Cmotorcommand motor_template;
-  if (!ReadProtoFromTextFile(std::string(kDataDir) + "motor_control.pb.txt",
-                              motor_template)) {
-    return;
-  }
-
-  for (int i = 1; i <= TEST_COUNT; ++i) {
-    Cmotorcommand motor_req;
-    motor_req.CopyFrom(motor_template);
-
-    JointState motor_resp;
-
-    auto start = chrono::steady_clock::now();
-    uint32_t status = client.MotorControl(motor_req, motor_resp);
-    auto end = chrono::steady_clock::now();
-
-    double latency_ms =
-        chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() /
-        1000000.0;
-    latencies.push_back(latency_ms);
-
-    if (status == 0) {
-      success_count++;
-    }
-
-    cout << "\r⏳ 进度: " << i << "/" << TEST_COUNT << flush;
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-  }
-  cout << endl;
-
-  if (latencies.empty()) {
-    cout << "[!] MotorControl 无数据" << endl;
-    return;
-  }
-
-  sort(latencies.begin(), latencies.end());
-  double min_val = latencies.front();
-  double max_val = latencies.back();
-  double sum = 0.0;
-  for (double v : latencies) sum += v;
-  double avg = sum / latencies.size();
-
-  int p50_idx = static_cast<int>(0.50 * latencies.size());
-  int p95_idx = static_cast<int>(0.95 * latencies.size());
-  int p99_idx = static_cast<int>(0.99 * latencies.size());
-
-  double p50 = latencies[p50_idx];
-  double p95 = latencies[p95_idx];
-  double p99 = latencies[p99_idx];
-
-  cout << fixed << setprecision(3);
-  cout << "\n╔======================================╗" << endl;
-  cout << "║    MotorControl (RPC) 统计结果       ║" << endl;
-  cout << "╠======================================╣" << endl;
-  cout << "║ 总请求数: " << setw(13) << TEST_COUNT << " ║" << endl;
-  cout << "║ 成功数: " << setw(15) << success_count << " ║" << endl;
-  cout << "║ 成功率: " << setw(14) << (success_count * 100.0 / TEST_COUNT)
-       << "% ║" << endl;
-  cout << "║ 最小延迟: " << setw(12) << min_val << " ms ║" << endl;
-  cout << "║ 最大延迟: " << setw(12) << max_val << " ms ║" << endl;
-  cout << "║ 平均延迟: " << setw(12) << avg << " ms ║" << endl;
-  cout << "║ P50 延迟: " << setw(13) << p50 << " ms ║" << endl;
-  cout << "║ P95 延迟: " << setw(13) << p95 << " ms ║" << endl;
-  cout << "║ P99 延迟: " << setw(13) << p99 << " ms ║" << endl;
-  cout << "╚======================================╝" << endl;
-}
-*/
-
 void TestMotorCalibrationRPC(ControlApiClient& client) {
   const int TEST_COUNT = 50;
   std::vector<double> latencies;
@@ -1037,7 +876,7 @@ void TestSetUWBConfigurator(ControlApiClient& client) {
   if (status == 0) {
     cout << "✅ UWB 硬件配置成功" << endl;
   } else {
-    cout << "[❌] UWB 硬件配置失败，状态码: " << status << endl;
+    cout << "[❌] UWB 硬件配置失败，状态码: 0x" << std::hex << status << std::dec << endl;
   }
 }
 
@@ -1057,7 +896,7 @@ void TestSetUWBConfigManager(ControlApiClient& client) {
   if (status == 0) {
     cout << "✅ UWB 配置管理成功" << endl;
   } else {
-    cout << "[❌] UWB 配置管理失败，状态码: " << status << endl;
+    cout << "[❌] UWB 配置管理失败，状态码: 0x" << std::hex << status << std::dec << endl;
   }
 }
 
@@ -1107,8 +946,6 @@ void TestAllInterfaces(ControlApiClient& client, SystemApiClient& system_client)
   TestGetDiagnosticData(system_client);
   TestGetRobotStatus(system_client);
   TestGetBatteryPercentage(system_client);
-  // TestJoyControl(client);
-  // TestCmotorcommand(client);
   TestMotorCalibrationRPC(client);
 
   // 发布接口测试（Zenoh）
@@ -1175,10 +1012,6 @@ int main() {
         TestGetRobotStatus(*system_client);
       } else if (input == "10") {
         TestGetBatteryPercentage(*system_client);
-      } else if (input == "11") {
-        // TestJoyControl(*tangpa_client);
-      } else if (input == "12") {
-        // TestCmotorcommand(*tangpa_client);
       } else if (input == "13") {
         TestSendJoyControl(*tangpa_client);
       } else if (input == "14") {

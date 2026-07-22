@@ -5,7 +5,7 @@ grpc_client:
   # 服务器连接配置
   connection:
     # 默认连接目标（IP:Port）
-    default_target: "192.168.1.100:50051"
+    default_target: "localhost:50051"
     # 通道就绪等待超时 (ms)
     channel_ready_timeout_ms: 5000
     # 通道状态检查间隔 (s)
@@ -27,7 +27,7 @@ logging:
   # 日志目录(绝对路径或相对可执行程序路径)
   log_dir: "SDK-Client/logs"
   # 日志文件最大限制 (MB)
-  max_file_size_mb: 3
+  max_file_size_mb: 30
   # 最大文件数量
   max_files_per_level: 10
   # 异步开关

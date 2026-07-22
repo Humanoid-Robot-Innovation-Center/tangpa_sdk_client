@@ -276,4 +276,3 @@ cd ./bin/control_test_gui/ && ./control_test_gui
 
 1. 检查机器人API服务端是否已启用对应数据流
 2. 检查网络连接是否正常
-

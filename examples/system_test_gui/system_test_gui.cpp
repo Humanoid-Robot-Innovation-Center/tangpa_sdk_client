@@ -26,7 +26,7 @@ void TestGetDiagnosticData(std::unique_ptr<SystemApiClient>& client) {
     if (diag.status_size() > 5)
       std::cout << "  ... 共 " << diag.status_size() << " 项" << std::endl;
   } else {
-    std::cerr << "  失败, 状态码: " << status << std::endl;
+    std::cerr << "  失败, 状态码: 0x" << std::hex << status << std::dec << std::endl;
   }
 }
 
@@ -42,7 +42,7 @@ void TestGetRobotStatus(std::unique_ptr<SystemApiClient>& client) {
     for (int i = 0; i < robot_status.error_codes_size(); ++i)
       std::cout << "    [" << i << "] " << robot_status.error_codes(i) << std::endl;
   } else {
-    std::cerr << "  失败, 状态码: " << status << std::endl;
+    std::cerr << "  失败, 状态码: 0x" << std::hex << status << std::dec << std::endl;
   }
 }
 
@@ -53,7 +53,7 @@ void TestGetBatteryPercentage(std::unique_ptr<SystemApiClient>& client) {
   if (status == 0) {
     std::cout << "  info: " << battery.info() << std::endl;
   } else {
-    std::cerr << "  失败, 状态码: " << status << std::endl;
+    std::cerr << "  失败, 状态码: 0x" << std::hex << status << std::dec << std::endl;
   }
 }
 

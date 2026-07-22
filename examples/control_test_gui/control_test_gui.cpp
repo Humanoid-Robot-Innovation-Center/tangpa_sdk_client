@@ -79,68 +79,28 @@ void TestGetImuData(std::unique_ptr<ControlApiClient>& client) {
     std::cout << "  姿态: x=" << ori.x() << " y=" << ori.y()
               << " z=" << ori.z() << " w=" << ori.w() << std::endl;
   } else {
-    std::cerr << "  失败, 状态码: " << status << std::endl;
+    std::cerr << "  失败, 状态码: 0x" << std::hex << status << std::dec << std::endl;
   }
 }
 
-/*
-void TestMotorControlRPC(std::unique_ptr<ControlApiClient>& client) {
-  std::cout << "\n--- MotorControl (RPC) ---" << std::endl;
+void TestSendMotorControl(std::unique_ptr<ControlApiClient>& client) {
+  std::cout << "\n--- SendMotorControl ---" << std::endl;
   Cmotorcommand req;
   if (!ReadProtoFromTextFile(std::string(kDataDir) + "motor_control.pb.txt", req))
     return;
 
-  JointState resp;
-  uint32_t status = client->MotorControl(req, resp);
-  if (status == 0) {
-    std::cout << "  返回关节数量: " << resp.name_size() << std::endl;
-    for (int i = 0; i < resp.name_size(); ++i)
-      std::cout << "  " << resp.name(i) << ": pos=" << resp.position(i)
-                << " vel=" << resp.velocity(i)
-                << " eff=" << resp.effort(i) << std::endl;
-  } else {
-    std::cerr << "  失败, 状态码: " << status << std::endl;
-  }
-}
-
-void TestJoyControlRPC(std::unique_ptr<ControlApiClient>& client) {
-  std::cout << "\n--- JoyControl (RPC) ---" << std::endl;
-  Joy req;
-  if (!ReadProtoFromTextFile(std::string(kDataDir) + "joy_control.pb.txt", req))
-    return;
-
-  JoyControllerResponse resp;
-  uint32_t status = client->JoyControl(req, resp);
-  if (status == 0) {
-    const auto& diag = resp.results();
-    std::cout << "  诊断状态数量: " << diag.status_size() << std::endl;
-    for (int i = 0; i < diag.status_size(); ++i)
-      std::cout << "  [" << i << "] " << diag.status(i).name()
-                << ": " << diag.status(i).message() << std::endl;
-  } else {
-    std::cerr << "  失败, 状态码: " << status << std::endl;
-  }
-}
-*/
-
-void TestSendMotorControl(std::unique_ptr<ControlApiClient>& client) {
-  std::cout << "\n--- SendMotorControl (流式发布) ---" << std::endl;
-  Cmotorcommand req;
-  if (!ReadProtoFromTextFile(std::string(kDataDir) + "motor_control_stream.pb.txt", req))
-    return;
-
   uint32_t status = client->SendMotorControl(req);
-  std::cout << "  状态码: " << status << (status == 0 ? " [OK]" : " [FAIL]") << std::endl;
+  std::cout << "  状态码: 0x" << std::hex << status << std::dec << (status == 0 ? " [OK]" : " [FAIL]") << std::endl;
 }
 
 void TestSendJoyControl(std::unique_ptr<ControlApiClient>& client) {
-  std::cout << "\n--- SendJoyControl (流式发布) ---" << std::endl;
+  std::cout << "\n--- SendJoyControl ---" << std::endl;
   Joy req;
   if (!ReadProtoFromTextFile(std::string(kDataDir) + "joy_control.pb.txt", req))
     return;
 
   uint32_t status = client->SendJoyControl(req);
-  std::cout << "  状态码: " << status << (status == 0 ? " [OK]" : " [FAIL]") << std::endl;
+  std::cout << "  状态码: 0x" << std::hex << status << std::dec << (status == 0 ? " [OK]" : " [FAIL]") << std::endl;
 }
 
 void TestSubscribeImu(std::unique_ptr<ControlApiClient>& client) {
@@ -189,7 +149,7 @@ void TestSetUWBConfigurator(std::unique_ptr<ControlApiClient>& client) {
     return;
 
   uint32_t status = client->SetUWBConfigurator(req);
-  std::cout << "  状态码: " << status << (status == 0 ? " [OK]" : " [FAIL]") << std::endl;
+  std::cout << "  状态码: 0x" << std::hex << status << std::dec << (status == 0 ? " [OK]" : " [FAIL]") << std::endl;
 }
 
 void TestSetUWBConfigManager(std::unique_ptr<ControlApiClient>& client) {
@@ -199,7 +159,7 @@ void TestSetUWBConfigManager(std::unique_ptr<ControlApiClient>& client) {
     return;
 
   uint32_t status = client->SetUWBConfigManager(req);
-  std::cout << "  状态码: " << status << (status == 0 ? " [OK]" : " [FAIL]") << std::endl;
+  std::cout << "  状态码: 0x" << std::hex << status << std::dec << (status == 0 ? " [OK]" : " [FAIL]") << std::endl;
 }
 
 void TestSubscribeUWBData(std::unique_ptr<ControlApiClient>& client) {
@@ -227,7 +187,7 @@ void TestMotorCalibration(std::unique_ptr<ControlApiClient>& client) {
     std::cout << "  state: " << resp.state() << " motor_id: " << resp.motor_id()
               << " message: " << resp.message() << std::endl;
   } else {
-    std::cerr << "  失败, 状态码: " << status << std::endl;
+    std::cerr << "  失败, 状态码: 0x" << std::hex << status << std::dec << std::endl;
   }
 }
 
@@ -245,17 +205,15 @@ void PrintMenu() {
   std::cout << "        Control API 测试菜单         " << std::endl;
   std::cout << "=====================================" << std::endl;
   std::cout << "  1  - GetImuData           获取IMU数据" << std::endl;
-  std::cout << "  2  - MotorControl         RPC电机控制" << std::endl;
-  std::cout << "  3  - JoyControl           RPC手柄控制" << std::endl;
-  std::cout << "  4  - SendMotorControl     流式电机控制" << std::endl;
-  std::cout << "  5  - SendJoyControl       流式手柄控制" << std::endl;
-  std::cout << "  6  - SubscribeImu         订阅IMU (5s)" << std::endl;
-  std::cout << "  7  - SubscribeJoy         订阅手柄 (5s)" << std::endl;
-  std::cout << "  8  - SubscribeJointState  订阅关节状态 (5s)" << std::endl;
-  std::cout << "  9  - SetUWBConfigurator   UWB硬件配置" << std::endl;
-  std::cout << "  10 - SetUWBConfigManager  UWB跟随配置" << std::endl;
-  std::cout << "  11 - SubscribeUWBData     订阅UWB数据 (5s)" << std::endl;
-  std::cout << "  12 - MotorCalibration     电机标定" << std::endl;
+  std::cout << "  2  - SendMotorControl     发布电机控制" << std::endl;
+  std::cout << "  3  - SendJoyControl       发布手柄控制" << std::endl;
+  std::cout << "  4  - SubscribeImu         订阅IMU (5s)" << std::endl;
+  std::cout << "  5  - SubscribeJoy         订阅手柄 (5s)" << std::endl;
+  std::cout << "  6  - SubscribeJointState  订阅关节状态 (5s)" << std::endl;
+  std::cout << "  7  - SetUWBConfigurator   UWB硬件配置" << std::endl;
+  std::cout << "  8  - SetUWBConfigManager  UWB跟随配置" << std::endl;
+  std::cout << "  9  - SubscribeUWBData     订阅UWB数据 (5s)" << std::endl;
+  std::cout << "  10 - MotorCalibration     电机标定" << std::endl;
   std::cout << "  0  - 退出" << std::endl;
   std::cout << "=====================================" << std::endl;
   std::cout << "请输入编号: ";
@@ -287,17 +245,15 @@ int main(int argc, char* argv[]) {
     switch (choice) {
       case 0: goto Exit;
       case 1:  TestGetImuData(client); break;
-      case 2:  /* TestMotorControlRPC(client); */ break;
-      case 3:  /* TestJoyControlRPC(client); */ break;
-      case 4:  TestSendMotorControl(client); break;
-      case 5:  TestSendJoyControl(client); break;
-      case 6:  TestSubscribeImu(client); break;
-      case 7:  TestSubscribeJoy(client); break;
-      case 8:  TestSubscribeJointState(client); break;
-      case 9:  TestSetUWBConfigurator(client); break;
-      case 10: TestSetUWBConfigManager(client); break;
-      case 11: TestSubscribeUWBData(client); break;
-      case 12: TestMotorCalibration(client); break;
+      case 2:  TestSendMotorControl(client); break;
+      case 3:  TestSendJoyControl(client); break;
+      case 4:  TestSubscribeImu(client); break;
+      case 5:  TestSubscribeJoy(client); break;
+      case 6:  TestSubscribeJointState(client); break;
+      case 7:  TestSetUWBConfigurator(client); break;
+      case 8:  TestSetUWBConfigManager(client); break;
+      case 9:  TestSubscribeUWBData(client); break;
+      case 10: TestMotorCalibration(client); break;
       default: std::cerr << "无效选择" << std::endl; break;
     }
 
